@@ -1,6 +1,8 @@
 import axios from 'axios';
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+export const BASE_URL = (
+  process.env.NEXT_PUBLIC_API_URL || 'https://sunny-vitality-production-7feb.up.railway.app'
+).replace(/\/+$/, '');
 
 const api = axios.create({
   baseURL: BASE_URL,
@@ -30,6 +32,7 @@ api.interceptors.response.use(
       if (!currentPath.includes('/login') && !currentPath.includes('/register')) {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
+        // eslint-disable-next-line @next/next/no-location-assign-relative-destination
         window.location.href = '/login';
       }
     }
@@ -44,7 +47,10 @@ export const getImageUrl = (imageUrl?: string | null): string => {
   if (imageUrl.startsWith('http://') || imageUrl.startsWith('https://') || imageUrl.startsWith('data:')) {
     return imageUrl;
   }
-  const cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  let cleanPath = imageUrl.startsWith('/') ? imageUrl : `/${imageUrl}`;
+  if (!cleanPath.startsWith('/uploads/')) {
+    cleanPath = `/uploads${cleanPath}`;
+  }
   return `${BASE_URL}${cleanPath}`;
 };
 

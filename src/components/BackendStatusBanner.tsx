@@ -1,24 +1,31 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import api from '../services/api';
-import { AlertCircle, Wifi, RefreshCw } from 'lucide-react';
+import api, { BASE_URL } from '../services/api';
+import { AlertCircle, RefreshCw, ExternalLink } from 'lucide-react';
 
 export default function BackendStatusBanner() {
   const [isBackendOnline, setIsBackendOnline] = useState<boolean | null>(null);
   const [checking, setChecking] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string>('');
 
-  const checkBackend = async () => {
+  const handleCheckBackend = async () => {
     setChecking(true);
+    setErrorMessage('');
     try {
-      await api.get('/products', { timeout: 3000 });
+      await api.get('/', { timeout: 6000 });
       setIsBackendOnline(true);
     } catch (err: unknown) {
-      const error = err as { code?: string; response?: unknown };
-      if (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || !error.response) {
+      const error = err as { code?: string; response?: { status?: number; data?: unknown } };
+      const status = error.response?.status;
+
+      if (status === 502 || status === 503 || status === 504) {
         setIsBackendOnline(false);
+        setErrorMessage(`Server Railway mengembalikan HTTP ${status} (Application failed to respond).`);
+      } else if (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || !error.response) {
+        setIsBackendOnline(false);
+        setErrorMessage('Tidak dapat terhubung ke server (Network Error / Connection Timeout).');
       } else {
-        // If there's an HTTP response (even 401 or 404), backend is alive
         setIsBackendOnline(true);
       }
     } finally {
@@ -27,11 +34,39 @@ export default function BackendStatusBanner() {
   };
 
   useEffect(() => {
-    checkBackend();
+    let isMounted = true;
+    api
+      .get('/', { timeout: 6000 })
+      .then(() => {
+        if (isMounted) {
+          setIsBackendOnline(true);
+          setChecking(false);
+        }
+      })
+      .catch((err: unknown) => {
+        if (!isMounted) return;
+        const error = err as { code?: string; response?: { status?: number; data?: unknown } };
+        const status = error.response?.status;
+
+        if (status === 502 || status === 503 || status === 504) {
+          setIsBackendOnline(false);
+          setErrorMessage(`Server Railway mengembalikan HTTP ${status} (Application failed to respond).`);
+        } else if (error.code === 'ECONNABORTED' || error.code === 'ERR_NETWORK' || !error.response) {
+          setIsBackendOnline(false);
+          setErrorMessage('Tidak dapat terhubung ke server (Network Error / Connection Timeout).');
+        } else {
+          setIsBackendOnline(true);
+        }
+        setChecking(false);
+      });
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   if (isBackendOnline === null || isBackendOnline === true) {
-    return null; // Silent when backend is running smoothly
+    return null; // Sembunyikan banner jika backend aktif dan normal
   }
 
   return (
@@ -51,26 +86,58 @@ export default function BackendStatusBanner() {
           alignItems: 'center',
           justifyContent: 'space-between',
           flexWrap: 'wrap',
-          gap: '0.5rem',
+          gap: '0.75rem',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <AlertCircle size={16} color="#ef4444" />
-          <span>
-            <strong>Koneksi API:</strong> Backend NestJS di{' '}
-            <code>{process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000'}</code> belum
-            terdeteksi aktif. Pastikan server backend Anda sudah berjalan.
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', flex: 1, minWidth: '280px' }}>
+          <AlertCircle size={18} color="#ef4444" style={{ flexShrink: 0 }} />
+          <div>
+            <span>
+              <strong>Koneksi Backend API Terputus:</strong> Backend di{' '}
+              <a
+                href={BASE_URL}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  color: '#fff',
+                  textDecoration: 'underline',
+                  fontWeight: 600,
+                  fontFamily: 'monospace',
+                }}
+              >
+                {BASE_URL}
+              </a>{' '}
+              belum terdeteksi aktif.
+            </span>
+            {errorMessage && (
+              <span style={{ display: 'block', fontSize: '0.78rem', color: '#f87171', marginTop: '0.15rem' }}>
+                Detail: {errorMessage}
+              </span>
+            )}
+          </div>
         </div>
-        <button
-          onClick={checkBackend}
-          disabled={checking}
-          className="btn btn-secondary btn-sm"
-          style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem' }}
-        >
-          <RefreshCw size={12} className={checking ? 'animate-spin' : ''} />
-          <span>{checking ? 'Memeriksa...' : 'Cek Ulang'}</span>
-        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+          <a
+            href={`${BASE_URL}/api`}
+            target="_blank"
+            rel="noreferrer"
+            className="btn btn-secondary btn-sm"
+            style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem', textDecoration: 'none' }}
+          >
+            <ExternalLink size={12} />
+            <span>Swagger API</span>
+          </a>
+          <button
+            onClick={handleCheckBackend}
+            disabled={checking}
+            className="btn btn-secondary btn-sm"
+            style={{ padding: '0.25rem 0.6rem', fontSize: '0.78rem' }}
+          >
+            <RefreshCw size={12} className={checking ? 'animate-spin' : ''} />
+            <span>{checking ? 'Memeriksa...' : 'Cek Ulang'}</span>
+          </button>
+        </div>
       </div>
     </div>
   );
