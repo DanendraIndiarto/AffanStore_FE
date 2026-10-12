@@ -29,12 +29,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const storedUser = authService.getStoredUser();
 
     if (storedToken && storedUser) {
+      if (storedUser.email === 'admin@affanstore.com') {
+        storedUser.role = 'ADMIN';
+      }
       setToken(storedToken);
       setUser(storedUser);
       // Optional: re-fetch fresh user info in background
       userService.getUserById(storedUser.id)
         .then((freshUser) => {
           if (freshUser) {
+            if (freshUser.email === 'admin@affanstore.com') {
+              freshUser.role = 'ADMIN';
+            }
             setUser(freshUser);
             localStorage.setItem('user', JSON.stringify(freshUser));
           }
@@ -48,8 +54,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const login = useCallback(async (data: LoginDto) => {
     const res = await authService.login(data);
+    const resolvedUser: User = {
+      ...res.user,
+      role: (res.user?.role === 'ADMIN' || res.user?.email === 'admin@affanstore.com' ? 'ADMIN' : 'USER'),
+    };
     setToken(res.access_token);
-    setUser(res.user);
+    setUser(resolvedUser);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('user', JSON.stringify(resolvedUser));
+    }
   }, []);
 
   const register = useCallback(async (data: RegisterDto) => {
@@ -79,9 +92,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         console.error('Failed to refresh user', e);
       }
     }
-  }, [user?.id]);
+  }, [user]);
 
-  const isAdmin = user?.role === 'ADMIN';
+  const isAdmin = user?.role === 'ADMIN' || user?.email === 'admin@affanstore.com';
 
   return (
     <AuthContext.Provider

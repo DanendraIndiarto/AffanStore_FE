@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { userService } from '../../services/userService';
-import { User, Mail, Lock, Shield, Calendar, Save, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Save, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {

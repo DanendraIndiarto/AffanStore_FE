@@ -12,12 +12,8 @@ import { orderService } from '../../../services/orderService';
 import {
   ArrowLeft,
   ShoppingCart,
-  CheckCircle2,
   Truck,
   QrCode,
-  ShieldCheck,
-  AlertCircle,
-  Package,
 } from 'lucide-react';
 
 export default function ProductDetailPage() {

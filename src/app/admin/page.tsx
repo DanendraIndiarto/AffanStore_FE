@@ -314,12 +314,16 @@ export default function AdminPage() {
         </div>
         <h2 style={{ marginBottom: '0.75rem' }}>Akses Ditolak (Khusus Admin)</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '2rem', maxWidth: '480px', margin: '0 auto 2rem' }}>
-          Halaman ini hanya dapat diakses oleh akun dengan Role <strong>ADMIN</strong>. Silakan masuk
-          dengan akun administrator Anda.
+          Halaman ini khusus untuk manajemen toko (Dashboard Admin). Akun yang sedang masuk (<strong>{user?.email}</strong>) memiliki peran <strong>{user?.role}</strong>.
         </p>
-        <Link href="/" className="btn btn-primary">
-          Kembali ke Beranda Toko
-        </Link>
+        <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'center', flexWrap: 'wrap' }}>
+          <Link href="/login?redirect=/admin" className="btn btn-primary">
+            Masuk dengan Akun Admin
+          </Link>
+          <Link href="/" className="btn btn-secondary">
+            Kembali ke Beranda Toko
+          </Link>
+        </div>
       </div>
     );
   }

@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Product } from '../types';
 import { formatRupiah, getImageUrl } from '../services/api';
-import { ShoppingCart, Eye, Package, ArrowRight } from 'lucide-react';
+import { ShoppingCart, Eye } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;

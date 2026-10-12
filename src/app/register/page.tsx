@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { ShoppingBag, UserPlus, User, Mail, Lock, ShieldCheck } from 'lucide-react';
+import { UserPlus, User, Mail, Lock, ShieldCheck } from 'lucide-react';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
