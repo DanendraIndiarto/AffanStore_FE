@@ -158,12 +158,15 @@ export default function AdminPage() {
 
     setIsSavingProduct(true);
     try {
+      const cleanPrice = String(Math.max(0, parseInt(productForm.price.replace(/[^0-9]/g, ''), 10) || 0));
+      const cleanStock = String(Math.max(0, parseInt(productForm.stock.replace(/[^0-9]/g, ''), 10) || 0));
+
       const formData = new FormData();
-      formData.append('name', productForm.name);
-      formData.append('price', productForm.price);
-      formData.append('category', productForm.category);
-      formData.append('stock', productForm.stock);
-      if (productForm.description) formData.append('description', productForm.description);
+      formData.append('name', productForm.name.trim());
+      formData.append('price', cleanPrice);
+      formData.append('category', productForm.category.trim());
+      formData.append('stock', cleanStock);
+      if (productForm.description) formData.append('description', productForm.description.trim());
       if (productImageFile) formData.append('image', productImageFile);
 
       if (editingProduct) {

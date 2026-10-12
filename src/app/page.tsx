@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { Product } from '../types';
 import { productService } from '../services/productService';
 import ProductCard from '../components/ProductCard';
@@ -37,6 +38,7 @@ export default function HomePage() {
 
   const { user } = useAuth();
   const { showToast } = useToast();
+  const router = useRouter();
 
   const fetchProducts = async () => {
     setLoading(true);
@@ -67,7 +69,7 @@ export default function HomePage() {
   const handleOpenQuickBuy = (product: Product) => {
     if (!user) {
       showToast('Silakan masuk terlebih dahulu untuk melakukan checkout', 'warning');
-      window.location.href = '/login';
+      router.push('/login');
       return;
     }
     setQuickBuyProduct(product);

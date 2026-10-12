@@ -13,7 +13,7 @@ export default function BackendStatusBanner() {
     setChecking(true);
     setErrorMessage('');
     try {
-      await api.get('/', { timeout: 6000 });
+      await api.get('/', { timeout: 12000 });
       setIsBackendOnline(true);
     } catch (err: unknown) {
       const error = err as { code?: string; response?: { status?: number; data?: unknown } };
@@ -36,7 +36,7 @@ export default function BackendStatusBanner() {
   useEffect(() => {
     let isMounted = true;
     api
-      .get('/', { timeout: 6000 })
+      .get('/', { timeout: 12000 })
       .then(() => {
         if (isMounted) {
           setIsBackendOnline(true);

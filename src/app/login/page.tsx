@@ -167,21 +167,46 @@ function LoginContent() {
               gap: '0.4rem',
               color: 'var(--text-muted)',
               fontWeight: 600,
-              marginBottom: '0.4rem',
+              marginBottom: '0.6rem',
             }}
           >
-            <span>Akun Percobaan (Demo):</span>
+            <span>Akun Uji Coba Cepat (Klik untuk Isi):</span>
           </div>
-          <div
-            onClick={() => handleUseDemo('budi@example.com', 'password123')}
-            style={{
-              cursor: 'pointer',
-              color: 'var(--text-muted)',
-              textDecoration: 'underline',
-              lineHeight: 1.5,
-            }}
-          >
-            <code>budi@example.com</code> / <code>password123</code> (Klik untuk isi)
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div
+              onClick={() => handleUseDemo('tester@example.com', 'password123')}
+              style={{
+                cursor: 'pointer',
+                padding: '0.4rem 0.6rem',
+                borderRadius: 'var(--radius-sm)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <strong style={{ color: '#fff' }}>Pembeli (USER):</strong> <code>tester@example.com</code>
+              </div>
+              <span style={{ color: 'var(--primary)', fontSize: '0.75rem', fontWeight: 600 }}>Pilih</span>
+            </div>
+            <div
+              onClick={() => handleUseDemo('admin@affanstore.com', 'adminpassword123')}
+              style={{
+                cursor: 'pointer',
+                padding: '0.4rem 0.6rem',
+                borderRadius: 'var(--radius-sm)',
+                background: 'rgba(255, 255, 255, 0.05)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+              }}
+            >
+              <div>
+                <strong style={{ color: '#fff' }}>Akun Admin:</strong> <code>admin@affanstore.com</code>
+              </div>
+              <span style={{ color: 'var(--primary)', fontSize: '0.75rem', fontWeight: 600 }}>Pilih</span>
+            </div>
           </div>
         </div>
 

@@ -64,7 +64,7 @@ export default function ProductDetailPage() {
   const handleOrder = async () => {
     if (!user) {
       showToast('Silakan login terlebih dahulu untuk memesan produk', 'warning');
-      router.push('/login');
+      router.push(`/login?redirect=${encodeURIComponent(`/products/${product?.id || id}`)}`);
       return;
     }
     if (!product) return;

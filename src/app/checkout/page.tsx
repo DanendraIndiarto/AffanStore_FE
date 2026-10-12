@@ -69,7 +69,7 @@ function CheckoutContent() {
 
     if (!user) {
       showToast('Silakan masuk ke akun Anda terlebih dahulu untuk checkout', 'warning');
-      router.push(`/login?redirect=/checkout?productId=${productId}`);
+      router.push(`/login?redirect=${encodeURIComponent(`/checkout?productId=${productId}`)}`);
       return;
     }
 
