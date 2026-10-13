@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Product } from '../types';
 import { formatRupiah, getImageUrl } from '../services/api';
-import { ShoppingCart, Eye } from 'lucide-react';
+import { ShoppingBag, Eye, Star, Zap, Truck, ShieldCheck } from 'lucide-react';
 
 interface ProductCardProps {
   product: Product;
@@ -15,187 +15,213 @@ export default function ProductCard({ product, onQuickBuy }: ProductCardProps) {
   const [imgSrc, setImgSrc] = useState<string>(getImageUrl(product.imageUrl));
   const isOutOfStock = product.stock <= 0;
 
+  // Realistic e-commerce promo price simulation (for display aesthetics)
+  const strikePrice = Math.round((product.price * 1.18) / 1000) * 1000;
+  const ratingScore = '4.9';
+  const soldCount = (product.id * 17 + 23) % 250 + 15;
+
   return (
-    <div
-      className="glass-panel"
-      style={{
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        height: '100%',
-        position: 'relative',
-        transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
-      }}
-    >
-      {/* Product Image */}
-      <div
-        style={{
-          position: 'relative',
-          width: '100%',
-          paddingTop: '75%', // 4:3 aspect ratio
-          backgroundColor: '#0c121e',
-          overflow: 'hidden',
-        }}
-      >
+    <div className="product-card-wrap">
+      {/* Product Image Area */}
+      <div className="product-img-box">
         <img
           src={imgSrc}
           alt={product.name}
           onError={() => {
             setImgSrc('https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=600&auto=format&fit=crop&q=80');
           }}
-          style={{
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            width: '100%',
-            height: '100%',
-            objectFit: 'cover',
-            transition: 'transform 0.4s ease',
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.transform = 'scale(1.06)';
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.transform = 'scale(1)';
-          }}
         />
 
-        {/* Category Pill */}
+        {/* Top Badges */}
         <div
           style={{
             position: 'absolute',
-            top: '12px',
-            left: '12px',
-            background: 'rgba(12, 15, 23, 0.85)',
-            padding: '3px 9px',
-            borderRadius: 'var(--radius-sm)',
-            fontSize: '0.74rem',
-            fontWeight: 600,
-            color: 'var(--text-muted)',
-            border: '1px solid var(--border)',
+            top: '10px',
+            left: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '4px',
+            zIndex: 2,
           }}
         >
-          {product.category || 'Umum'}
+          <span className="badge-official">Official Store</span>
+          {product.price > 100000 && (
+            <span className="badge-flash">
+              <Zap size={10} style={{ display: 'inline', marginRight: '2px' }} />
+              Hot Deal
+            </span>
+          )}
         </div>
 
         {/* Stock Badge */}
         <div
           style={{
             position: 'absolute',
-            top: '12px',
-            right: '12px',
+            top: '10px',
+            right: '10px',
+            zIndex: 2,
           }}
         >
           {isOutOfStock ? (
-            <span className="badge badge-cancelled">Habis</span>
+            <span className="badge badge-cancelled">Stok Habis</span>
           ) : product.stock < 5 ? (
             <span className="badge badge-pending">Sisa {product.stock}</span>
           ) : (
             <span className="badge badge-paid">Stok {product.stock}</span>
           )}
         </div>
+
+        {/* Free Shipping Badge floating over bottom image */}
+        <div
+          style={{
+            position: 'absolute',
+            bottom: '8px',
+            left: '10px',
+            zIndex: 2,
+          }}
+        >
+          <span className="badge-free-shipping">
+            <Truck size={11} style={{ display: 'inline', marginRight: '3px' }} />
+            Bebas Ongkir
+          </span>
+        </div>
       </div>
 
-      {/* Product Info */}
+      {/* Product Content Details */}
       <div
         style={{
-          padding: '1.25rem',
+          padding: '1.15rem',
           display: 'flex',
           flexDirection: 'column',
           flex: 1,
         }}
       >
-        <Link href={`/products/${product.id}`}>
+        {/* Category & Tag */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            marginBottom: '0.4rem',
+            fontSize: '0.76rem',
+            color: 'var(--text-dim)',
+          }}
+        >
+          <span style={{ fontWeight: 600, color: 'var(--text-muted)' }}>
+            {product.category || 'Umum'}
+          </span>
+          <span>📍 Jakarta Pusat</span>
+        </div>
+
+        {/* Product Title */}
+        <Link href={`/products/${product.id}`} style={{ textDecoration: 'none' }}>
           <h3
             style={{
-              fontSize: '1.05rem',
+              fontSize: '0.98rem',
               fontWeight: 700,
               lineHeight: 1.4,
+              color: 'var(--text-main)',
               marginBottom: '0.5rem',
               display: '-webkit-box',
               WebkitLineClamp: 2,
               WebkitBoxOrient: 'vertical',
               overflow: 'hidden',
-              cursor: 'pointer',
+              minHeight: '2.8em',
+              transition: 'color 0.2s ease',
             }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = '#60a5fa')}
+            onMouseLeave={(e) => (e.currentTarget.style.color = 'var(--text-main)')}
           >
             {product.name}
           </h3>
         </Link>
 
-        {product.description && (
-          <p
-            style={{
-              fontSize: '0.85rem',
-              color: 'var(--text-muted)',
-              marginBottom: '1rem',
-              display: '-webkit-box',
-              WebkitLineClamp: 2,
-              WebkitBoxOrient: 'vertical',
-              overflow: 'hidden',
-              flex: 1,
-            }}
-          >
-            {product.description}
-          </p>
-        )}
-
+        {/* Rating and Sold Social Proof */}
         <div
           style={{
-            marginTop: 'auto',
-            paddingTop: '0.75rem',
-            borderTop: '1px solid var(--border)',
             display: 'flex',
             alignItems: 'center',
-            justifyContent: 'space-between',
             gap: '0.5rem',
+            fontSize: '0.78rem',
+            marginBottom: '0.85rem',
           }}
         >
-          <div>
-            <div style={{ fontSize: '0.75rem', color: 'var(--text-dim)' }}>Harga</div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '2px', color: 'var(--star-color)' }}>
+            <Star size={13} fill="currentColor" />
+            <strong style={{ color: '#fff', fontSize: '0.82rem' }}>{ratingScore}</strong>
+          </div>
+          <span style={{ color: 'var(--text-dim)' }}>•</span>
+          <span style={{ color: 'var(--text-muted)' }}>{soldCount}+ terjual</span>
+        </div>
+
+        {/* Pricing Section */}
+        <div style={{ marginTop: 'auto', paddingTop: '0.65rem', borderTop: '1px solid var(--border)' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+            <span
+              style={{
+                fontSize: '0.76rem',
+                color: 'var(--text-dim)',
+                textDecoration: 'line-through',
+              }}
+            >
+              {formatRupiah(strikePrice)}
+            </span>
+            <span className="badge-discount">-18%</span>
+          </div>
+
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'baseline',
+              justifyContent: 'space-between',
+              marginBottom: '0.85rem',
+            }}
+          >
             <div
               style={{
-                fontSize: '1.2rem',
+                fontSize: '1.28rem',
                 fontWeight: 800,
-                color: '#fff',
+                color: '#ffffff',
                 fontFamily: 'var(--font-heading)',
+                letterSpacing: '-0.02em',
               }}
             >
               {formatRupiah(product.price)}
             </div>
           </div>
 
-          <div style={{ display: 'flex', gap: '0.4rem' }}>
-            <Link
-              href={`/products/${product.id}`}
-              className="btn btn-secondary btn-sm"
-              title="Lihat Detail"
-              style={{ padding: '0.5rem 0.65rem' }}
-            >
-              <Eye size={16} />
-            </Link>
-
+          {/* Action CTAs */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr auto', gap: '0.5rem' }}>
             {onQuickBuy ? (
               <button
                 onClick={() => onQuickBuy(product)}
                 disabled={isOutOfStock}
-                className="btn btn-primary btn-sm"
-                title="Beli Sekarang"
-                style={{ padding: '0.5rem 0.85rem' }}
+                className="btn btn-orange btn-sm"
+                title="Beli Langsung Sekarang"
+                style={{ width: '100%', gap: '0.4rem' }}
               >
-                <ShoppingCart size={16} />
-                <span>Beli</span>
+                <Zap size={14} />
+                <span>{isOutOfStock ? 'Habis' : 'Beli Langsung'}</span>
               </button>
             ) : (
               <Link
                 href={`/checkout?productId=${product.id}`}
-                className={`btn btn-primary btn-sm ${isOutOfStock ? 'btn-disabled' : ''}`}
-                style={{ padding: '0.5rem 0.85rem' }}
+                className={`btn btn-orange btn-sm ${isOutOfStock ? 'btn-disabled' : ''}`}
+                style={{ width: '100%', gap: '0.4rem' }}
               >
-                <ShoppingCart size={16} />
-                <span>Beli</span>
+                <Zap size={14} />
+                <span>{isOutOfStock ? 'Habis' : 'Beli Langsung'}</span>
               </Link>
             )}
+
+            <Link
+              href={`/products/${product.id}`}
+              className="btn btn-secondary btn-sm"
+              title="Lihat Detail Produk"
+              style={{ padding: '0.45rem 0.65rem' }}
+            >
+              <Eye size={15} />
+            </Link>
           </div>
         </div>
       </div>

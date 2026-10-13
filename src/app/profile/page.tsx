@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
 import { userService } from '../../services/userService';
-import { User, Mail, Lock, Save, ArrowLeft } from 'lucide-react';
+import { User, Mail, Lock, Save, ArrowLeft, ShieldCheck, UserCheck } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ProfilePage() {
@@ -63,26 +63,34 @@ export default function ProfilePage() {
 
   if (authLoading || !user) {
     return (
-      <div className="container" style={{ padding: '5rem 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Memuat data profil...</p>
+      <div className="container" style={{ padding: '6rem 0', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-muted)' }}>Memuat data profil akun...</p>
       </div>
     );
   }
 
   return (
-    <div className="container" style={{ padding: '3rem 1.5rem', maxWidth: '720px' }}>
-      <div style={{ marginBottom: '2rem' }}>
+    <div className="container" style={{ padding: '2.5rem 1.5rem 5rem', maxWidth: '740px' }}>
+      <div style={{ marginBottom: '1.75rem' }}>
         <Link
           href="/"
           className="btn btn-secondary btn-sm"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
         >
-          <ArrowLeft size={16} />
-          <span>Kembali ke Katalog</span>
+          <ArrowLeft size={15} />
+          <span>Kembali ke Beranda</span>
         </Link>
       </div>
 
-      <div className="glass-panel" style={{ padding: '2.5rem' }}>
+      <div
+        className="glass-panel"
+        style={{
+          padding: '2.5rem',
+          borderRadius: 'var(--radius-xl)',
+          border: '1px solid var(--border-light)',
+          boxShadow: 'var(--shadow-lg)',
+        }}
+      >
         <div
           style={{
             display: 'flex',
@@ -96,9 +104,12 @@ export default function ProfilePage() {
           }}
         >
           <div>
-            <h1 style={{ fontSize: '1.75rem', marginBottom: '0.25rem' }}>Profil Akun</h1>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+              <UserCheck size={22} color="#3b82f6" />
+              <h1 style={{ fontSize: '1.75rem', fontWeight: 800 }}>Profil Akun</h1>
+            </div>
             <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-              Informasi akun dan pengaturan autentikasi Anda
+              Kelola informasi identitas akun dan keamanan kata sandi Anda
             </p>
           </div>
 
@@ -118,7 +129,7 @@ export default function ProfilePage() {
                 size={18}
                 style={{
                   position: 'absolute',
-                  left: '12px',
+                  left: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'var(--text-dim)',
@@ -130,7 +141,7 @@ export default function ProfilePage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="form-control"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '44px' }}
               />
             </div>
           </div>
@@ -142,7 +153,7 @@ export default function ProfilePage() {
                 size={18}
                 style={{
                   position: 'absolute',
-                  left: '12px',
+                  left: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'var(--text-dim)',
@@ -154,7 +165,7 @@ export default function ProfilePage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="form-control"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '44px' }}
               />
             </div>
           </div>
@@ -166,7 +177,7 @@ export default function ProfilePage() {
                 size={18}
                 style={{
                   position: 'absolute',
-                  left: '12px',
+                  left: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'var(--text-dim)',
@@ -178,7 +189,7 @@ export default function ProfilePage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Kosongkan jika tidak ingin mengubah kata sandi"
                 className="form-control"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '44px' }}
               />
             </div>
           </div>
@@ -188,19 +199,27 @@ export default function ProfilePage() {
               padding: '1rem',
               borderRadius: 'var(--radius-md)',
               background: 'rgba(255, 255, 255, 0.03)',
-              fontSize: '0.85rem',
+              border: '1px solid var(--border)',
+              fontSize: '0.84rem',
               color: 'var(--text-muted)',
               display: 'flex',
               flexDirection: 'column',
-              gap: '0.35rem',
+              gap: '0.4rem',
             }}
           >
             <div>
-              ID Pengguna: <strong>#{user.id}</strong>
+              ID Pengguna: <strong style={{ color: '#fff' }}>#{user.id}</strong>
             </div>
             {user.createdAt && (
               <div>
-                Terdaftar Sejak: <strong>{new Date(user.createdAt).toLocaleDateString('id-ID')}</strong>
+                Terdaftar Sejak:{' '}
+                <strong style={{ color: '#fff' }}>
+                  {new Date(user.createdAt).toLocaleDateString('id-ID', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </strong>
               </div>
             )}
           </div>
@@ -209,10 +228,10 @@ export default function ProfilePage() {
             type="submit"
             disabled={saving}
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem' }}
+            style={{ width: '100%', marginTop: '0.5rem', gap: '0.5rem' }}
           >
             <Save size={18} />
-            <span>{saving ? 'Menyimpan Perubahan...' : 'Simpan Perubahan'}</span>
+            <span>{saving ? 'Menyimpan Perubahan...' : 'Simpan Perubahan Profil'}</span>
           </button>
         </form>
       </div>

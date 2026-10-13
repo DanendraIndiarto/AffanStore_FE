@@ -17,6 +17,9 @@ import {
   ShieldCheck,
   AlertCircle,
   Package,
+  MapPin,
+  Lock,
+  Zap,
 } from 'lucide-react';
 
 function CheckoutContent() {
@@ -107,8 +110,8 @@ function CheckoutContent() {
 
   if (loading) {
     return (
-      <div className="container" style={{ padding: '5rem 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Memuat halaman checkout...</p>
+      <div className="container" style={{ padding: '6rem 0', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-muted)' }}>Memuat halaman checkout belanja...</p>
       </div>
     );
   }
@@ -117,13 +120,13 @@ function CheckoutContent() {
     return (
       <div className="container" style={{ padding: '5rem 0', textAlign: 'center' }}>
         <Package size={48} style={{ color: 'var(--text-dim)', marginBottom: '1rem' }} />
-        <h2 style={{ marginBottom: '0.5rem' }}>Tidak Ada Produk untuk Checkout</h2>
+        <h2 style={{ marginBottom: '0.5rem', fontSize: '1.8rem' }}>Tidak Ada Produk untuk Checkout</h2>
         <p style={{ color: 'var(--text-muted)', marginBottom: '1.5rem' }}>
           Silakan pilih produk terlebih dahulu dari katalog toko kami.
         </p>
         <Link href="/" className="btn btn-primary">
           <ArrowLeft size={16} />
-          <span>Kembali ke Katalog</span>
+          <span>Kembali ke Katalog Belanja</span>
         </Link>
       </div>
     );
@@ -132,20 +135,20 @@ function CheckoutContent() {
   const totalPrice = product.price * quantity;
 
   return (
-    <div className="container" style={{ padding: '3rem 1.5rem' }}>
-      <div style={{ marginBottom: '2rem' }}>
+    <div className="container" style={{ padding: '2rem 1.5rem 5rem' }}>
+      <div style={{ marginBottom: '1.5rem' }}>
         <Link
           href={`/products/${product.id}`}
           className="btn btn-secondary btn-sm"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem' }}
+          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.45rem' }}
         >
-          <ArrowLeft size={16} />
+          <ArrowLeft size={15} />
           <span>Kembali ke Detail Produk</span>
         </Link>
       </div>
 
-      <h1 style={{ fontSize: '2rem', marginBottom: '2rem' }}>
-        Selesaikan <span style={{ color: 'var(--primary)' }}>Pesanan Anda</span>
+      <h1 style={{ fontSize: '2rem', fontWeight: 800, marginBottom: '2rem' }}>
+        Konfirmasi &amp; <span style={{ color: 'var(--primary-light)' }}>Pembayaran Pesanan</span>
       </h1>
 
       <form onSubmit={handleCheckout}>
@@ -157,11 +160,14 @@ function CheckoutContent() {
             alignItems: 'start',
           }}
         >
-          {/* Left Column: Order Options & Payment Method */}
+          {/* Left Column: Product & Shipping & Payment */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {/* Step 1: Detail Item */}
+            {/* Step 1: Item Summary */}
             <div className="glass-panel" style={{ padding: '1.75rem' }}>
-              <h3 style={{ fontSize: '1.15rem', marginBottom: '1.25rem' }}>1. Ringkasan Produk</h3>
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', fontWeight: 700 }}>
+                1. Ringkasan Barang Belanja
+              </h3>
+
               <div
                 style={{
                   display: 'flex',
@@ -170,38 +176,43 @@ function CheckoutContent() {
                   padding: '1rem',
                   borderRadius: 'var(--radius-md)',
                   background: 'rgba(255, 255, 255, 0.03)',
+                  border: '1px solid var(--border)',
                 }}
               >
                 <img
                   src={getImageUrl(product.imageUrl)}
                   alt={product.name}
                   style={{
-                    width: '70px',
-                    height: '70px',
+                    width: '72px',
+                    height: '72px',
                     borderRadius: 'var(--radius-sm)',
                     objectFit: 'cover',
                   }}
                 />
                 <div style={{ flex: 1 }}>
-                  <h4 style={{ fontSize: '1.05rem', marginBottom: '0.2rem' }}>{product.name}</h4>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--text-muted)' }}>
-                    Kategori: {product.category} • Stok: {product.stock}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.2rem' }}>
+                    <span className="badge-official">Official Store</span>
+                    <span style={{ fontSize: '0.78rem', color: 'var(--text-muted)' }}>
+                      {product.category || 'Umum'}
+                    </span>
                   </div>
-                  <div style={{ fontWeight: 700, color: '#fff', marginTop: '0.3rem' }}>
+                  <h4 style={{ fontSize: '1.05rem', fontWeight: 700, marginBottom: '0.3rem' }}>{product.name}</h4>
+                  <div style={{ fontWeight: 800, color: '#fff', fontSize: '1rem' }}>
                     {formatRupiah(product.price)} / unit
                   </div>
                 </div>
               </div>
 
-              {/* Quantity Selector */}
+              {/* Quantity Stepper */}
               <div style={{ marginTop: '1.25rem' }}>
-                <label className="form-label">Tentukan Kuantitas</label>
+                <label className="form-label">Tentukan Kuantitas Pesanan</label>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                   <button
                     type="button"
                     className="btn btn-secondary btn-sm"
                     onClick={() => setQuantity((q) => Math.max(1, q - 1))}
                     disabled={quantity <= 1}
+                    style={{ width: '34px', height: '34px', padding: 0 }}
                   >
                     -
                   </button>
@@ -213,25 +224,28 @@ function CheckoutContent() {
                     className="btn btn-secondary btn-sm"
                     onClick={() => setQuantity((q) => Math.min(product.stock, q + 1))}
                     disabled={quantity >= product.stock}
+                    style={{ width: '34px', height: '34px', padding: 0 }}
                   >
                     +
                   </button>
+                  <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginLeft: '0.5rem' }}>
+                    (Stok tersedia: {product.stock} unit)
+                  </span>
                 </div>
               </div>
             </div>
 
-            {/* Step 2: Business Logic Payment & Shipping Sync */}
+            {/* Step 2: Payment & Delivery Method Sync */}
             <div className="glass-panel" style={{ padding: '1.75rem' }}>
-              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.5rem' }}>
-                2. Metode Pembayaran & Pengiriman
+              <h3 style={{ fontSize: '1.15rem', marginBottom: '0.4rem', fontWeight: 700 }}>
+                2. Metode Pembayaran &amp; Kurir Pengiriman
               </h3>
-              <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
-                Sesuai aturan backend API AffanStore, metode pembayaran tersinkronisasi ketat dengan
-                metode pengiriman.
+              <p style={{ fontSize: '0.84rem', color: 'var(--text-muted)', marginBottom: '1.25rem' }}>
+                Pilih metode pembayaran yang Anda inginkan. Kurir pengiriman otomatis disesuaikan secara ketat.
               </p>
 
               <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {/* QRIS + NON_COD Option */}
+                {/* QRIS */}
                 <label
                   style={{
                     display: 'flex',
@@ -239,9 +253,9 @@ function CheckoutContent() {
                     gap: '1rem',
                     padding: '1.25rem',
                     borderRadius: 'var(--radius-md)',
-                    border: `2px solid ${paymentMethod === 'QRIS' ? 'var(--primary)' : 'var(--border)'}`,
+                    border: `2px solid ${paymentMethod === 'QRIS' ? 'var(--primary-light)' : 'var(--border)'}`,
                     background:
-                      paymentMethod === 'QRIS' ? 'rgba(99, 102, 241, 0.12)' : 'var(--bg-input)',
+                      paymentMethod === 'QRIS' ? 'rgba(37, 99, 235, 0.12)' : 'var(--bg-input)',
                     cursor: 'pointer',
                     transition: 'var(--transition)',
                   }}
@@ -255,17 +269,18 @@ function CheckoutContent() {
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <QrCode size={18} color="var(--primary)" />
-                      <strong style={{ fontSize: '1rem' }}>QRIS (Non-Tunai) + Kirim NON_COD</strong>
+                      <QrCode size={18} color="var(--primary-light)" />
+                      <strong style={{ fontSize: '1rem' }}>QRIS Non-Tunai (Cashless)</strong>
+                      <span className="badge-official" style={{ marginLeft: 'auto' }}>Kirim NON_COD</span>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                      Bayar instan melalui BCA, GoPay, OVO, Dana, ShopeePay. Pengiriman langsung dikirim
-                      via ekspedisi Express.
+                    <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      Bayar instan menggunakan M-Banking (BCA, Mandiri, BRI) atau E-Wallet (GoPay, OVO, Dana).
+                      Paket langsung diproses via Kurir Express.
                     </div>
                   </div>
                 </label>
 
-                {/* CASH + COD Option */}
+                {/* CASH (COD) */}
                 <label
                   style={{
                     display: 'flex',
@@ -273,9 +288,9 @@ function CheckoutContent() {
                     gap: '1rem',
                     padding: '1.25rem',
                     borderRadius: 'var(--radius-md)',
-                    border: `2px solid ${paymentMethod === 'CASH' ? 'var(--primary)' : 'var(--border)'}`,
+                    border: `2px solid ${paymentMethod === 'CASH' ? 'var(--primary-light)' : 'var(--border)'}`,
                     background:
-                      paymentMethod === 'CASH' ? 'rgba(99, 102, 241, 0.12)' : 'var(--bg-input)',
+                      paymentMethod === 'CASH' ? 'rgba(37, 99, 235, 0.12)' : 'var(--bg-input)',
                     cursor: 'pointer',
                     transition: 'var(--transition)',
                   }}
@@ -289,18 +304,18 @@ function CheckoutContent() {
                   />
                   <div style={{ flex: 1 }}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                      <Truck size={18} color="var(--success)" />
-                      <strong style={{ fontSize: '1rem' }}>CASH (Tunai) + Kirim COD</strong>
+                      <Truck size={18} color="#10b981" />
+                      <strong style={{ fontSize: '1rem' }}>Cash On Delivery (COD)</strong>
+                      <span className="badge-free-shipping" style={{ marginLeft: 'auto' }}>Kirim COD</span>
                     </div>
-                    <div style={{ fontSize: '0.85rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                      Bayar tunai di tempat langsung ke kurir saat paket pesanan Anda tiba di alamat
-                      tujuan.
+                    <div style={{ fontSize: '0.84rem', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      Bayar tunai di tempat langsung ke kurir saat paket pesanan Anda tiba di alamat penerima.
                     </div>
                   </div>
                 </label>
               </div>
 
-              {/* QRIS Visual Preview */}
+              {/* QRIS Code Preview Simulator */}
               {paymentMethod === 'QRIS' && (
                 <div
                   style={{
@@ -312,8 +327,8 @@ function CheckoutContent() {
                     border: '1px dashed var(--border)',
                   }}
                 >
-                  <div style={{ fontSize: '0.85rem', color: 'var(--text-main)', fontWeight: 600, marginBottom: '0.5rem' }}>
-                    Simulasi Pembayaran QRIS AffanStore
+                  <div style={{ fontSize: '0.86rem', color: 'var(--text-main)', fontWeight: 700, marginBottom: '0.6rem' }}>
+                    Simulasi Kode QRIS Pembayaran
                   </div>
                   <div
                     style={{
@@ -330,21 +345,21 @@ function CheckoutContent() {
                   >
                     <img
                       src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=AFFANSTORE-PAY-${product.id}-${totalPrice}`}
-                      alt="QRIS Code"
+                      alt="QRIS Barcode"
                       style={{ width: '100%', height: '100%', objectFit: 'contain' }}
                     />
                   </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>
-                    Scan QRIS ini dengan aplikasi E-Wallet atau M-Banking apapun.
+                    Scan QRIS ini dengan aplikasi M-Banking atau E-Wallet apapun di Indonesia.
                   </div>
                 </div>
               )}
             </div>
           </div>
 
-          {/* Right Column: Checkout Invoice & Confirm */}
+          {/* Right Column: Order Invoice & Checkout Button */}
           <div className="glass-panel" style={{ padding: '1.75rem', position: 'sticky', top: '90px' }}>
-            <h3 style={{ fontSize: '1.15rem', marginBottom: '1.25rem' }}>Rincian Tagihan</h3>
+            <h3 style={{ fontSize: '1.15rem', marginBottom: '1.25rem', fontWeight: 700 }}>Rincian Tagihan Belanja</h3>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.5rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem' }}>
@@ -352,36 +367,36 @@ function CheckoutContent() {
                 <span>{formatRupiah(product.price)}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Jumlah Unit</span>
-                <span>x {quantity}</span>
+                <span style={{ color: 'var(--text-muted)' }}>Jumlah Pembelian</span>
+                <span style={{ fontWeight: 600 }}>x {quantity} unit</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Metode Bayar</span>
                 <span className="badge badge-payment">{paymentMethod}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Tipe Pengiriman</span>
+                <span style={{ color: 'var(--text-muted)' }}>Pengiriman</span>
                 <span className="badge badge-payment">{shippingType}</span>
               </div>
               <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.92rem' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Ongkos Kirim</span>
-                <span style={{ color: 'var(--success)' }}>Gratis (Promo)</span>
+                <span style={{ color: '#10b981', fontWeight: 600 }}>Gratis (Promo Bebas Ongkir)</span>
               </div>
 
               <div
                 style={{
                   borderTop: '1px solid var(--border)',
-                  paddingTop: '1rem',
+                  paddingTop: '1.1rem',
                   display: 'flex',
                   justifyContent: 'space-between',
-                  alignItems: 'center',
+                  alignItems: 'baseline',
                 }}
               >
                 <div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-dim)' }}>Total Pembayaran</div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>Total Pembayaran</div>
                   <div
                     style={{
-                      fontSize: '1.6rem',
+                      fontSize: '1.65rem',
                       fontWeight: 800,
                       color: '#fff',
                       fontFamily: 'var(--font-heading)',
@@ -396,11 +411,11 @@ function CheckoutContent() {
             <button
               type="submit"
               disabled={submitting || product.stock <= 0}
-              className="btn btn-primary btn-lg"
-              style={{ width: '100%', marginBottom: '1rem' }}
+              className="btn btn-orange btn-lg"
+              style={{ width: '100%', marginBottom: '1rem', gap: '0.5rem' }}
             >
-              <CheckCircle2 size={18} />
-              <span>{submitting ? 'Memproses Pesanan...' : 'Bayar & Buat Pesanan'}</span>
+              <Zap size={18} />
+              <span>{submitting ? 'Memproses Pesanan...' : 'Bayar Sekarang'}</span>
             </button>
 
             <div
@@ -409,12 +424,12 @@ function CheckoutContent() {
                 alignItems: 'center',
                 gap: '0.5rem',
                 fontSize: '0.78rem',
-                color: 'var(--text-dim)',
+                color: 'var(--text-muted)',
                 justifyContent: 'center',
               }}
             >
-              <ShieldCheck size={14} color="#10b981" />
-              <span>Database Atomic Transaction Protected</span>
+              <ShieldCheck size={15} color="#10b981" />
+              <span>Proteksi Transaksi &amp; Pengurangan Stok Otomatis</span>
             </div>
           </div>
         </div>
@@ -427,7 +442,7 @@ export default function CheckoutPage() {
   return (
     <Suspense
       fallback={
-        <div className="container" style={{ padding: '5rem 0', textAlign: 'center' }}>
+        <div className="container" style={{ padding: '6rem 0', textAlign: 'center' }}>
           <p style={{ color: 'var(--text-muted)' }}>Memuat checkout...</p>
         </div>
       }

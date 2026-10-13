@@ -21,6 +21,10 @@ import {
   ArrowRight,
   RefreshCw,
   ShoppingBag,
+  ShieldCheck,
+  Eye,
+  QrCode,
+  RotateCcw,
 } from 'lucide-react';
 
 export default function OrdersPage() {
@@ -68,7 +72,7 @@ export default function OrdersPage() {
     try {
       await orderService.cancelOrder(orderToCancel.id);
       showToast(
-        `Pesanan #${orderToCancel.id} berhasil dibatalkan. Stok barang otomatis direstock!`,
+        `Pesanan #${orderToCancel.id} berhasil dibatalkan. Stok barang otomatis direstock kembali!`,
         'success'
       );
       setOrderToCancel(null);
@@ -98,7 +102,7 @@ export default function OrdersPage() {
       case 'CANCELLED':
         return (
           <span className="badge badge-cancelled">
-            <XCircle size={13} /> Dibatalkan
+            <XCircle size={13} /> Dibatalkan (Restocked)
           </span>
         );
       case 'PENDING':
@@ -113,14 +117,15 @@ export default function OrdersPage() {
 
   if (authLoading) {
     return (
-      <div className="container" style={{ padding: '5rem 0', textAlign: 'center' }}>
-        <p style={{ color: 'var(--text-muted)' }}>Memeriksa sesi pengguna...</p>
+      <div className="container" style={{ padding: '6rem 0', textAlign: 'center' }}>
+        <p style={{ color: 'var(--text-muted)' }}>Memeriksa sesi akun Anda...</p>
       </div>
     );
   }
 
   return (
-    <div className="container" style={{ padding: '3rem 1.5rem' }}>
+    <div className="container" style={{ padding: '2.5rem 1.5rem 4rem' }}>
+      {/* Header Bar */}
       <div
         style={{
           display: 'flex',
@@ -132,7 +137,10 @@ export default function OrdersPage() {
         }}
       >
         <div>
-          <h1 style={{ fontSize: '2rem', marginBottom: '0.25rem' }}>Riwayat Pesanan</h1>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+            <ShoppingBag size={22} color="#3b82f6" />
+            <h1 style={{ fontSize: '1.85rem', fontWeight: 800 }}>Pesanan Saya</h1>
+          </div>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem' }}>
             Pantau dan kelola seluruh transaksi belanja Anda di AffanStore
           </p>
@@ -142,20 +150,20 @@ export default function OrdersPage() {
           onClick={fetchOrders}
           disabled={loading}
           className="btn btn-secondary btn-sm"
-          style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}
+          style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}
         >
           <RefreshCw size={14} className={loading ? 'animate-spin' : ''} />
-          <span>Segarkan</span>
+          <span>Segarkan Data</span>
         </button>
       </div>
 
-      {/* Tabs */}
+      {/* Filter Tabs */}
       <div
         style={{
           display: 'flex',
-          gap: '0.5rem',
+          gap: '0.6rem',
           borderBottom: '1px solid var(--border)',
-          paddingBottom: '0.75rem',
+          paddingBottom: '0.85rem',
           marginBottom: '2rem',
           overflowX: 'auto',
         }}
@@ -179,7 +187,7 @@ export default function OrdersPage() {
           className={`btn btn-sm ${activeTab === 'PAID' ? 'btn-primary' : 'btn-secondary'}`}
           style={{ borderRadius: 'var(--radius-full)' }}
         >
-          Dibayar ({orders.filter((o) => o.status === 'PAID').length})
+          Selesai / Dibayar ({orders.filter((o) => o.status === 'PAID').length})
         </button>
         <button
           onClick={() => setActiveTab('CANCELLED')}
@@ -192,14 +200,16 @@ export default function OrdersPage() {
 
       {/* Orders List */}
       {loading ? (
-        <div style={{ textAlign: 'center', padding: '3rem 0', color: 'var(--text-muted)' }}>
-          Memuat riwayat pesanan...
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="skeleton" style={{ height: '180px', borderRadius: 'var(--radius-lg)' }} />
+          ))}
         </div>
       ) : filteredOrders.length === 0 ? (
         <div
           className="glass-panel"
           style={{
-            padding: '4rem 2rem',
+            padding: '4.5rem 2rem',
             textAlign: 'center',
             maxWidth: '560px',
             margin: '2rem auto',
@@ -207,8 +217,8 @@ export default function OrdersPage() {
         >
           <div
             style={{
-              width: '60px',
-              height: '60px',
+              width: '64px',
+              height: '64px',
               borderRadius: '50%',
               background: 'rgba(255, 255, 255, 0.05)',
               display: 'flex',
@@ -218,13 +228,13 @@ export default function OrdersPage() {
               color: 'var(--text-dim)',
             }}
           >
-            <Package size={30} />
+            <Package size={32} />
           </div>
-          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem' }}>Belum Ada Pesanan</h3>
-          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem' }}>
-            Anda belum memiliki riwayat transaksi dengan kategori filter ini.
+          <h3 style={{ fontSize: '1.25rem', marginBottom: '0.5rem', fontWeight: 700 }}>Belum Ada Pesanan</h3>
+          <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', marginBottom: '1.5rem', lineHeight: 1.6 }}>
+            Belum ada riwayat pesanan pada kategori ini. Yuk temukan berbagai produk menarik di katalog kami!
           </p>
-          <Link href="/" className="btn btn-primary">
+          <Link href="/" className="btn btn-orange">
             <ShoppingBag size={16} />
             <span>Mulai Berbelanja</span>
           </Link>
@@ -232,7 +242,16 @@ export default function OrdersPage() {
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           {filteredOrders.map((order) => (
-            <div key={order.id} className="glass-panel" style={{ padding: '1.5rem' }}>
+            <div
+              key={order.id}
+              className="glass-panel"
+              style={{
+                padding: '1.5rem',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-lg)',
+              }}
+            >
+              {/* Order Header */}
               <div
                 style={{
                   display: 'flex',
@@ -242,28 +261,33 @@ export default function OrdersPage() {
                   gap: '1rem',
                   borderBottom: '1px solid var(--border)',
                   paddingBottom: '1rem',
-                  marginBottom: '1rem',
+                  marginBottom: '1.15rem',
                 }}
               >
-                <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', flexWrap: 'wrap' }}>
-                  <span style={{ fontWeight: 700, fontSize: '1rem', color: '#fff' }}>
-                    Order #{order.id}
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem', flexWrap: 'wrap' }}>
+                  <span className="badge-official">Affan Store</span>
+                  <span style={{ fontWeight: 800, fontSize: '0.98rem', color: '#fff' }}>
+                    Pesanan #{order.id}
                   </span>
                   {renderStatusBadge(order.status)}
                 </div>
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-                  <span className="badge badge-payment">
-                    <CreditCard size={12} /> {order.paymentMethod}
+                  <span
+                    className="badge badge-payment"
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}
+                  >
+                    {order.paymentMethod === 'QRIS' ? <QrCode size={13} color="#3b82f6" /> : <Truck size={13} color="#10b981" />}
+                    <span>{order.paymentMethod}</span>
                   </span>
                   <span className="badge badge-payment">
-                    <Truck size={12} /> {order.shippingType}
+                    Kurir: {order.shippingType}
                   </span>
                 </div>
               </div>
 
-              {/* Items in this order */}
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              {/* Items List */}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem', marginBottom: '1.25rem' }}>
                 {order.orderItems && order.orderItems.length > 0 ? (
                   order.orderItems.map((item, idx) => (
                     <div
@@ -275,14 +299,16 @@ export default function OrdersPage() {
                         gap: '1rem',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
                         <div
                           style={{
-                            width: '44px',
-                            height: '44px',
-                            borderRadius: '8px',
+                            width: '52px',
+                            height: '52px',
+                            borderRadius: 'var(--radius-sm)',
                             background: '#0c121e',
                             overflow: 'hidden',
+                            flexShrink: 0,
+                            border: '1px solid var(--border)',
                           }}
                         >
                           <img
@@ -292,23 +318,31 @@ export default function OrdersPage() {
                           />
                         </div>
                         <div>
-                          <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>
+                          <Link
+                            href={item.productId ? `/products/${item.productId}` : '#'}
+                            style={{
+                              fontWeight: 700,
+                              fontSize: '0.96rem',
+                              color: '#fff',
+                              display: 'inline-block',
+                            }}
+                          >
                             {item.product?.name || `Produk #${item.productId}`}
-                          </div>
+                          </Link>
                           <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>
-                            {item.quantity} x {formatRupiah(item.price)}
+                            {item.quantity} barang x {formatRupiah(item.price)}
                           </div>
                         </div>
                       </div>
 
-                      <div style={{ fontWeight: 700, color: '#fff', fontSize: '0.95rem' }}>
+                      <div style={{ fontWeight: 800, color: '#fff', fontSize: '1rem', textAlign: 'right' }}>
                         {formatRupiah(item.price * item.quantity)}
                       </div>
                     </div>
                   ))
                 ) : (
                   <div style={{ fontSize: '0.88rem', color: 'var(--text-muted)' }}>
-                    Item pesanan siap diproses.
+                    Item pesanan siap diproses oleh sistem.
                   </div>
                 )}
               </div>
@@ -327,13 +361,13 @@ export default function OrdersPage() {
               >
                 <div>
                   <span style={{ fontSize: '0.82rem', color: 'var(--text-dim)', marginRight: '0.5rem' }}>
-                    Total Pesanan:
+                    Total Belanja:
                   </span>
                   <span
                     style={{
-                      fontSize: '1.25rem',
+                      fontSize: '1.3rem',
                       fontWeight: 800,
-                      color: '#fff',
+                      color: '#ffffff',
                       fontFamily: 'var(--font-heading)',
                     }}
                   >
@@ -341,12 +375,14 @@ export default function OrdersPage() {
                   </span>
                 </div>
 
-                <div style={{ display: 'flex', gap: '0.6rem' }}>
+                <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
                   <button
                     onClick={() => setSelectedOrder(order)}
                     className="btn btn-secondary btn-sm"
+                    style={{ gap: '0.4rem' }}
                   >
-                    Detail Transaksi
+                    <Eye size={14} />
+                    <span>Detail Transaksi</span>
                   </button>
 
                   {/* Cancel Button ONLY if status is PENDING */}
@@ -354,8 +390,10 @@ export default function OrdersPage() {
                     <button
                       onClick={() => setOrderToCancel(order)}
                       className="btn btn-danger btn-sm"
+                      style={{ gap: '0.4rem' }}
                     >
-                      Batalkan Pesanan
+                      <RotateCcw size={14} />
+                      <span>Batalkan &amp; Restock</span>
                     </button>
                   )}
                 </div>
@@ -365,7 +403,7 @@ export default function OrdersPage() {
         </div>
       )}
 
-      {/* Confirmation Modal to Cancel Order */}
+      {/* Cancel Order Modal */}
       {orderToCancel && (
         <Modal
           isOpen={true}
@@ -393,8 +431,8 @@ export default function OrdersPage() {
           <div style={{ textAlign: 'center', padding: '1rem 0' }}>
             <div
               style={{
-                width: '56px',
-                height: '56px',
+                width: '60px',
+                height: '60px',
                 borderRadius: '50%',
                 background: 'rgba(239, 68, 68, 0.15)',
                 color: 'var(--danger)',
@@ -404,14 +442,14 @@ export default function OrdersPage() {
                 margin: '0 auto 1.25rem',
               }}
             >
-              <AlertTriangle size={28} />
+              <AlertTriangle size={30} />
             </div>
-            <h4 style={{ fontSize: '1.15rem', marginBottom: '0.75rem' }}>
+            <h4 style={{ fontSize: '1.2rem', marginBottom: '0.75rem', fontWeight: 700 }}>
               Batalkan Pesanan #{orderToCancel.id}?
             </h4>
-            <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem', lineHeight: 1.6 }}>
-              Apakah Anda yakin ingin membatalkan pesanan ini? Sesuai aturan bisnis AffanStore, stok
-              produk akan <strong>langsung direstock kembali</strong> ke database secara otomatis.
+            <p style={{ color: 'var(--text-muted)', fontSize: '0.92rem', lineHeight: 1.6 }}>
+              Apakah Anda yakin ingin membatalkan pesanan ini? Stok produk akan{' '}
+              <strong style={{ color: '#fff' }}>seketika dikembalikan</strong> ke database secara atomic.
             </p>
           </div>
         </Modal>
@@ -422,7 +460,7 @@ export default function OrdersPage() {
         <Modal
           isOpen={true}
           onClose={() => setSelectedOrder(null)}
-          title={`Detail Pesanan #${selectedOrder.id}`}
+          title={`Rincian Pesanan #${selectedOrder.id}`}
           footer={
             <button onClick={() => setSelectedOrder(null)} className="btn btn-secondary">
               Tutup
@@ -434,33 +472,52 @@ export default function OrdersPage() {
               style={{
                 display: 'flex',
                 justifyContent: 'space-between',
-                padding: '0.75rem 1rem',
+                padding: '0.85rem 1rem',
                 borderRadius: 'var(--radius-md)',
                 background: 'rgba(255, 255, 255, 0.03)',
+                border: '1px solid var(--border)',
               }}
             >
               <div>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>Status Saat Ini</div>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-dim)' }}>Status Transaksi</div>
                 <div style={{ marginTop: '0.25rem' }}>{renderStatusBadge(selectedOrder.status)}</div>
               </div>
               <div style={{ textAlign: 'right' }}>
-                <div style={{ fontSize: '0.78rem', color: 'var(--text-dim)' }}>ID Pelanggan</div>
-                <div style={{ fontWeight: 600 }}>#{selectedOrder.userId}</div>
+                <div style={{ fontSize: '0.76rem', color: 'var(--text-dim)' }}>ID Pelanggan</div>
+                <div style={{ fontWeight: 700 }}>#{selectedOrder.userId}</div>
               </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '0.65rem',
+                fontSize: '0.9rem',
+              }}
+            >
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Metode Pembayaran:</span>
                 <strong>{selectedOrder.paymentMethod}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
                 <span style={{ color: 'var(--text-muted)' }}>Tipe Pengiriman:</span>
                 <strong>{selectedOrder.shippingType}</strong>
               </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.9rem' }}>
-                <span style={{ color: 'var(--text-muted)' }}>Total Pembayaran:</span>
-                <strong style={{ color: '#fff' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span style={{ color: 'var(--text-muted)' }}>Biaya Pengiriman:</span>
+                <span style={{ color: '#10b981', fontWeight: 600 }}>Rp 0 (Bebas Ongkir)</span>
+              </div>
+              <div
+                style={{
+                  borderTop: '1px solid var(--border)',
+                  paddingTop: '0.65rem',
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <span style={{ color: 'var(--text-muted)', fontWeight: 600 }}>Total Pembayaran:</span>
+                <strong style={{ color: '#fff', fontSize: '1.1rem' }}>
                   {formatRupiah(selectedOrder.totalAmount)}
                 </strong>
               </div>

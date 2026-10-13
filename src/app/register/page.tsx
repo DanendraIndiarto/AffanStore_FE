@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../context/AuthContext';
 import { useToast } from '../../context/ToastContext';
-import { UserPlus, User, Mail, Lock, ShieldCheck } from 'lucide-react';
+import { UserPlus, User, Mail, Lock, ShieldCheck, ShoppingBag } from 'lucide-react';
 
 export default function RegisterPage() {
   const [name, setName] = useState('');
@@ -52,37 +52,40 @@ export default function RegisterPage() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        padding: '4rem 1.5rem',
+        padding: '3.5rem 1.5rem 5rem',
       }}
     >
       <div
         className="glass-panel"
         style={{
           width: '100%',
-          maxWidth: '440px',
+          maxWidth: '450px',
           padding: '2.5rem',
-          position: 'relative',
+          borderRadius: 'var(--radius-xl)',
+          boxShadow: 'var(--shadow-lg)',
+          border: '1px solid var(--border-light)',
         }}
       >
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div
             style={{
-              width: '44px',
-              height: '44px',
-              borderRadius: 'var(--radius-sm)',
-              background: 'var(--primary)',
+              width: '48px',
+              height: '48px',
+              borderRadius: 'var(--radius-md)',
+              background: 'linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               color: '#fff',
-              margin: '0 auto 1rem',
+              margin: '0 auto 1.15rem',
+              boxShadow: '0 4px 14px rgba(37, 99, 235, 0.35)',
             }}
           >
-            <UserPlus size={22} />
+            <UserPlus size={24} />
           </div>
-          <h1 style={{ fontSize: '1.75rem', marginBottom: '0.4rem' }}>Daftar Akun Baru</h1>
+          <h1 style={{ fontSize: '1.75rem', fontWeight: 800, marginBottom: '0.4rem' }}>Daftar Akun Baru</h1>
           <p style={{ color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-            Bergabung dengan AffanStore untuk belanja mudah dan cepat
+            Bergabung dengan AffanStore untuk belanja mudah, cepat, dan aman
           </p>
         </div>
 
@@ -94,7 +97,7 @@ export default function RegisterPage() {
                 size={18}
                 style={{
                   position: 'absolute',
-                  left: '12px',
+                  left: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'var(--text-dim)',
@@ -107,7 +110,7 @@ export default function RegisterPage() {
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Budi Santoso"
                 className="form-control"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '44px' }}
               />
             </div>
           </div>
@@ -119,7 +122,7 @@ export default function RegisterPage() {
                 size={18}
                 style={{
                   position: 'absolute',
-                  left: '12px',
+                  left: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'var(--text-dim)',
@@ -132,19 +135,19 @@ export default function RegisterPage() {
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="budi@example.com"
                 className="form-control"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '44px' }}
               />
             </div>
           </div>
 
           <div className="form-group" style={{ marginBottom: 0 }}>
-            <label className="form-label">Kata Sandi (Min. 6 Karakter)</label>
+            <label className="form-label">Kata Sandi (Minimal 6 Karakter)</label>
             <div style={{ position: 'relative' }}>
               <Lock
                 size={18}
                 style={{
                   position: 'absolute',
-                  left: '12px',
+                  left: '14px',
                   top: '50%',
                   transform: 'translateY(-50%)',
                   color: 'var(--text-dim)',
@@ -158,7 +161,7 @@ export default function RegisterPage() {
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="password123"
                 className="form-control"
-                style={{ paddingLeft: '40px' }}
+                style={{ paddingLeft: '44px' }}
               />
             </div>
           </div>
@@ -167,23 +170,23 @@ export default function RegisterPage() {
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '0.4rem',
-              fontSize: '0.78rem',
-              color: 'var(--text-dim)',
+              gap: '0.45rem',
+              fontSize: '0.8rem',
+              color: 'var(--text-muted)',
             }}
           >
-            <ShieldCheck size={14} color="#10b981" />
-            <span>Role akun baru otomatis diset ke status USER</span>
+            <ShieldCheck size={15} color="#10b981" />
+            <span>Akun terlindungi dengan standar enkripsi aman</span>
           </div>
 
           <button
             type="submit"
             disabled={loading}
             className="btn btn-primary"
-            style={{ width: '100%', marginTop: '0.5rem' }}
+            style={{ width: '100%', marginTop: '0.5rem', gap: '0.5rem' }}
           >
             <UserPlus size={18} />
-            <span>{loading ? 'Mendaftarkan Akun...' : 'Daftar Sekarang'}</span>
+            <span>{loading ? 'Mendaftarkan Akun...' : 'Daftar Akun Sekarang'}</span>
           </button>
         </form>
 
@@ -196,7 +199,7 @@ export default function RegisterPage() {
           }}
         >
           Sudah memiliki akun?{' '}
-          <Link href="/login" style={{ color: 'var(--primary)', fontWeight: 600 }}>
+          <Link href="/login" style={{ color: 'var(--primary-light)', fontWeight: 700 }}>
             Masuk di Sini
           </Link>
         </div>
